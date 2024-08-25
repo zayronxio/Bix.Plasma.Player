@@ -48,7 +48,7 @@ KCM.SimpleKCM {
     property string cfg_icon: plasmoid.configuration.icon
     property bool cfg_useCustomButtonImage: plasmoid.configuration.useCustomButtonImage
     property string cfg_customButtonImage: plasmoid.configuration.customButtonImage
-    property string cfg_sourceDirectory: directory.text
+    property alias cfg_sourceDirectory: directory.text
     //property alias cfg_showTrackName: showTrackName.checked
 
 
@@ -100,7 +100,7 @@ KCM.SimpleKCM {
             }
             TextField {
                 id: directory
-                width: 150
+                width: 180
             }
         }
 

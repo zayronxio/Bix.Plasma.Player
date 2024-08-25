@@ -2,33 +2,20 @@ import QtQuick 2.4
 import Qt.labs.folderlistmodel 2.15
 import org.kde.kirigami as Kirigami
 import org.kde.ksvg 1.0 as KSvg
-//import QtQml.Models
 import QtMultimedia
 import org.kde.plasma.plasma5support 2.0 as P5Support
-import QtQml.XmlListModel
-//import Qt.labs.settings 1.0
 import QtCore
 
 Item {
 
-    property string sourceDirectory: Plasmoid.configuration.sourceDirectory
-    property string urlFile: ""
-    //property string list: "all"
-
+    property string sourceDirectory: plasmoid.configuration.sourceDirectory
+    property string command: "find " + sourceDirectory + " -type d"
+    property string currentFileUrl: ""
     property bool showFavoritesOnly: false
-    //property int mediaMetaData: mediaPlayer.audioTracks.length
-    //property string title: mediaPlayer.metaData.stringValue(mediaPlayer.audioTracks[0].Title)
-
-    //MetaDateGenerator {
-      //  id: metaDateGenerator
-    //}
-
 
     Settings {
         id: favorites
         category: "favorites"
-        //fileName: "zayronPlasmaPlayer"
-        //location: "/home/zaron/.config//music.conf"
         property var files: []
     }
 
@@ -39,17 +26,17 @@ Item {
     ListModel {
         id: currentList
     }
-    //property int numDir: 0
-    property var dirs: []
+
+    property var directories: []
     property FolderListModel tracks: FolderListModel {
         id: trackModel
-        property real numIndexDirs: 0
+        property real currentDirIndex: 0
         nameFilters: ["*.mp3"]
         showDirs: false
-        folder: "file://" + dirs[numIndexDirs]
+        folder: "file://" + directories[currentDirIndex]
         onStatusChanged: {
             if (trackModel.status === FolderListModel.Ready) {
-                //mp3Model.clear(); // Clear the model before adding new items
+                // Clear the model before adding new items
                 for (var j = 0; j < trackModel.count; j++) {
                     mp3Model.append({
                         fileName: trackModel.get(j, "fileName"),
@@ -57,27 +44,25 @@ Item {
                                     isFavorite: false
                     });
                 }
-                if (numIndexDirs < dirs.length) {
-                    numIndexDirs =  numIndexDirs +1;
+                if (currentDirIndex < directories.length) {
+                    currentDirIndex += 1;
                     trackModel.reload()
                 }
             }
         }
     }
+
     P5Support.DataSource {
         id: executable
         engine: "executable"
         onNewData: {
             var stdout = data["stdout"];
             if (stdout) {
-                // Divide stdout en líneas (directorio por línea)
-                var directories = stdout.trim().split("\n")
-                dirs = directories
+                // Split stdout into lines (one directory per line)
+                var directoriesList = stdout.trim().split("\n")
+                directories = directoriesList
                 mp3Model.clear()
                 tracks.reload()
-                //updateTracks()
-                //tracks.folder = dirs[0]
-
             }
             disconnectSource(sourceName);
         }
@@ -87,39 +72,47 @@ Item {
     }
 
     Component.onCompleted: {
-        executable.exec("find /home/zaron/Música -type d");
+        if (sourceDirectory && sourceDirectory !== "") {
+            executable.exec(command);
+        } else {
+            console.log("sourceDirectory is not configured or is empty");
+        }
     }
 
+    onSourceDirectoryChanged: {
+        command = "find " + sourceDirectory + " -type d";
+        executable.exec(command);
+    }
 
-    // Player
+    // MediaPlayer instance
     MediaPlayer {
         id: mediaPlayer
         audioOutput: AudioOutput { id: audioOutput }
-        source: urlFile
+        source: currentFileUrl
         onMetaDataChanged: {
             var metaData = mediaPlayer.metaData
             if (!metaData.isEmpty()) {
-                console.log("Metadatos del archivo de audio:")
+                console.log("Audio file metadata:")
 
-                // Imprimir todas las claves disponibles
+                // Print all available keys
                 var keys = metaData.keys()
                 for (var i = 0; i < keys.length; ++i) {
                     var key = keys[i]
                     console.log("Key: " + key + " Value: " + metaData.stringValue(key))
                 }
 
-                // Utiliza las claves como cadenas de texto
+                // Use keys as text strings
                 var title = metaData.stringValue("0")
                 var artist = metaData.stringValue("20") ? metaData.stringValue("20") : metaData.stringValue("19")
                 var album = metaData.stringValue("18")
                 var genre = metaData.stringValue("12")
-                fg.source =  metaData.value("24")
+                fg.source = metaData.value("24")
                 console.log("Title: " + title)
                 console.log("Artist: " + artist)
                 console.log("Album: " + album)
                 console.log("Genre: " + genre)
             } else {
-                console.log("No hay metadatos disponibles.")
+                console.log("No metadata available.")
             }
         }
     }
@@ -139,34 +132,34 @@ Item {
         }
     }
 
-    function playPause(){
+    function playPause() {
         if (mediaPlayer.playbackState === MediaPlayer.PlayingState) {
             mediaPlayer.pause();
         } else {
             mediaPlayer.play();
         }
-
     }
+
     function nextTrack() {
-        var nextIndex = listOfRep.currentIndex + 1;
-        listOfRep.currentIndex = nextIndex;
-        urlFile = mp3Model.get(listOfRep.currentIndex).filePath;
+        var nextIndex = trackListView.currentIndex + 1;
+        trackListView.currentIndex = nextIndex;
+        currentFileUrl = mp3Model.get(trackListView.currentIndex).filePath;
         mediaPlayer.play();
     }
 
     function prevTrack() {
-        var prevIndex = listOfRep.currentIndex - 1;
-        listOfRep.currentIndex = prevIndex;
-        urlFile = mp3Model.get(listOfRep.currentIndex).filePath;
+        var prevIndex = trackListView.currentIndex - 1;
+        trackListView.currentIndex = prevIndex;
+        currentFileUrl = mp3Model.get(trackListView.currentIndex).filePath;
         mediaPlayer.play();
     }
 
     function addFavorite() {
-        var currentTrack = mp3Model.get(listOfRep.currentIndex).filePath;
+        var currentTrack = mp3Model.get(trackListView.currentIndex).filePath;
         var favoritesList = favorites.value("files") || [];
         var alreadyExists = false;
-        //favorites.setValue("files", favoritesList);
-        // Verificar si el archivo ya está en la lista de favoritos
+
+        // Check if the file is already in the favorites list
         for (var w = 0; w < favoritesList.length; w++) {
             if (favoritesList[w] === currentTrack) {
                 alreadyExists = true;
@@ -174,44 +167,41 @@ Item {
             }
         }
 
-        // Agregar el archivo a favoritos si no está ya en la lista
+        // Add the file to favorites if it's not already in the list
         if (!alreadyExists) {
-            //favoritesList.push(currentTrack);
             if (!favorites.value("files").toString().isEmpty()) {
                 favorites.setValue("files", favorites.value("files") + ", '" + currentTrack + "'")
             } else {
                 favorites.setValue("files", "'" + currentTrack + "'")
             }
-
         }
 
-        // Marcar el archivo actual como favorito en el modelo
-        mp3Model.setProperty(listOfRep.currentIndex, "isFavorite", true);
+        // Mark the current file as favorite in the model
+        mp3Model.setProperty(trackListView.currentIndex, "isFavorite", true);
 
-        // Mostrar el estado del archivo actual
-        console.log(mp3Model.get(listOfRep.currentIndex).isFavorite);
+        // Log the current file's favorite status
+        console.log(mp3Model.get(trackListView.currentIndex).isFavorite);
     }
-
 
     Item {
         id: controls
-        width: listOfRep.width
+        width: trackListView.width
         height: 70
-        anchors.horizontalCenter: listOfRep.horizontalCenter
+        anchors.horizontalCenter: trackListView.horizontalCenter
         anchors.bottom: parent.bottom
 
         Rectangle {
             color: "blue"
-            width: controls.height*.8
+            width: controls.height * 0.8
             height: width
-            radius: height/6
+            radius: height / 6
             anchors.left: controls.left
-            anchors.leftMargin: (controls.height-width)/2
+            anchors.leftMargin: (controls.height - width) / 2
             anchors.verticalCenter: controls.verticalCenter
         }
         Row  {
             id: control
-            width: parent.width - controls.height*1.1
+            width: parent.width - controls.height * 1.1
             height: 24
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
@@ -253,7 +243,7 @@ Item {
                     anchors.centerIn: next
                     onClicked: {
                         nextTrack()
-                        console.log(listOfRep.currentItem.filePath)
+                        console.log(trackListView.currentItem.filePath)
                     }
                 }
             }
@@ -261,7 +251,7 @@ Item {
     }
 
     ListView {
-        id: listOfRep
+        id: trackListView
         anchors.left: backgroundSidebar.right
         anchors.leftMargin: 15
         anchors.top: parent.top
@@ -282,8 +272,8 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    listOfRep.currentIndex = index;
-                    urlFile = model.filePath
+                    trackListView.currentIndex = index;
+                    currentFileUrl = model.filePath
                     mediaPlayer.play();
                 }
             }

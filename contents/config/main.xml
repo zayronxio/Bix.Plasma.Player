@@ -12,8 +12,8 @@
     <entry name="customButtonImage" type="Url">
       <default></default>
     </entry>
-    <entry name="directory" type="text">
-    <default>""</default>
+    <entry name="sourceDirectory" type="string">
+    <default></default>
     </entry>
   </group>
 </kcfg>

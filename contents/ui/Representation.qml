@@ -72,13 +72,14 @@ Item {
                 var pos = popupPosition(width, height);
                 x = pos.x;
                 y = pos.y;
-                timer.start(); // Iniciar el temporizador cuando se muestra la ventana
-                heightAnimation.start(); // Iniciar la animación cuando se muestra la ventana
+                timer.start(); // Start the timer when the window is shown
+                heightAnimation.start(); // Start the animation when the window is shown
             } else {
-                timer.stop(); // Detener el temporizador cuando se oculta la ventana
-                heightAnimation.stop(); // Detener la animación cuando se oculta la ventana
+                timer.stop(); // Stop the timer when the window is hidden
+                heightAnimation.stop(); // Stop the animation when the window is hidden
             }
         }
+
 
         onHeightChanged: {
             var pos = popupPosition(width, height);
@@ -153,9 +154,7 @@ Item {
             Layout.maximumHeight: minimumHeight
             focus: false
 
-            Text {
-                text: rootItem.z
-            }
+
             ListMultimedia {
                 id: listMultimedia
                 width: parent.width
