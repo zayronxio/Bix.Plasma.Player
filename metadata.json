@@ -1,0 +1,23 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "zayronxio"
+            }
+        ],
+        "Name": "Bix Player",
+        "Id": "Bix.Plasma.Player",
+        "Description": "Bix Plasma Player is a modern plasmoid, a multimedia audio player integrated into KDE Plasma 6.1",
+        "Category": "Utilities",
+        "Icon": "music-player",
+        "EnabledByDefault": true,
+        "License": "GPL-3.0+",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "0.1",
+        "Website": ""
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-MainScript": "ui/main.qml"
+}
