@@ -10,6 +10,7 @@ This plasmoid is in an early stage of development, it is not yet usable. Please,
   <img src="https://raw.githubusercontent.com/zayronxio/Bix.Plasma.Player/main/preview/image10.png" width=250/>
   <h2 align="center">Concept</h2>
 </p>
+
 ## Support
 
 For support, email zayronxio@gmail.com
@@ -39,6 +40,13 @@ For support, email zayronxio@gmail.com
 - Album cover image manager from the web
 - Internet radio station player
 
+
+## Installation
+
+- Download the contents of this repository.
+- Create a directory named 'Bix.Plasma.Player' in the ~/.local/share/plasma/plasmoids folder.
+- Copy the "contents" folder and the metadata.json file from the downloaded content into the newly created 'Bix.Plasma.Player' directory.
+- You can now add it to your panel like any other plasmoid or widget."
 
 [<img src="https://raw.githubusercontent.com/stefan-niedermann/paypal-donate-button/master/paypal-donate-button.png" width=200/>  
 ](https://www.paypal.com/paypalme/zayronxio)
