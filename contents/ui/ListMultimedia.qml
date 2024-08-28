@@ -12,6 +12,7 @@ Item {
     property string command: "find " + sourceDirectory + " -type d"
     property string currentFileUrl: ""
     property bool showFavoritesOnly: false
+    property bool allDirectoriesProcessed: false
 
     Settings {
         id: favorites
@@ -29,24 +30,30 @@ Item {
 
     property var directories: []
     property FolderListModel tracks: FolderListModel {
-        id: trackModel
-        property real currentDirIndex: 0
+        id: filesModel
+        property real numIndexDirs: 0
         nameFilters: ["*.mp3"]
         showDirs: false
-        folder: "file://" + directories[currentDirIndex]
+        folder: "file://" + dirs[numIndexDirs]
         onStatusChanged: {
-            if (trackModel.status === FolderListModel.Ready) {
-                // Clear the model before adding new items
-                for (var j = 0; j < trackModel.count; j++) {
+            if (filesModel.status === FolderListModel.Ready) {
+                //mp3Model.clear(); // Clear the model before adding new items
+                var loadFullFiles = false
+                for (var j = 0; j < filesModel.count; j++) {
                     mp3Model.append({
-                        fileName: trackModel.get(j, "fileName"),
-                                    filePath: trackModel.get(j, "filePath"),
+                        fileName: filesModel.get(j, "fileName"),
+                                    filePath: filesModel.get(j, "filePath"),
                                     isFavorite: false
                     });
+                    loadFullFiles = true
                 }
-                if (currentDirIndex < directories.length) {
-                    currentDirIndex += 1;
-                    trackModel.reload()
+                if (numIndexDirs < dirs.length) {
+                    numIndexDirs =  numIndexDirs +1;
+                    filesModel.reload()
+                } else {
+                    if (filesModel.status === FolderListModel.Ready && loadFullFiles) {
+                        allDirectoriesProcessed = true
+                    }
                 }
             }
         }
