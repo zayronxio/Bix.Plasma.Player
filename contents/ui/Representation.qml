@@ -17,6 +17,7 @@ Item {
     property int menuPos: 1
 
     property bool plasmoidFocus: true
+    property bool isfocus: false
 
     onVisibleChanged: {
         root.visible = !root.visible
@@ -152,8 +153,12 @@ Item {
             Layout.maximumWidth:  minimumWidth
             Layout.minimumHeight: 480
             Layout.maximumHeight: minimumHeight
-            focus: false
+            focus: true
 
+            onActiveFocusChanged: {
+                isfocus = !isfocus
+                console.log("focus is", isfocus)
+            }
 
             ListMultimedia {
                 id: listMultimedia
