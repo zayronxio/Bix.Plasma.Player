@@ -6,9 +6,7 @@ Item {
     property int countFilesAnalyzed: 0
     property ListModel baseModel: []
     property alias tracksModel: tracks
-    property bool metaLeaded: false // Currently unused
-    property string gr: undefined // Currently unused
-    property int timeNotchanges: 0 // Currently unused
+    property bool waitingMetaData: false
 
     ListModel {
         id: tracks
@@ -16,107 +14,130 @@ Item {
 
     MediaPlayer {
         id: fakePlayer
-        autoPlay: true
-        source: baseModel.get(0).filePath;
+        autoPlay: false
+        source: baseModel.get(0).filePath
         audioOutput: AudioOutput {
             id: dynamicaudioOt
-            volume: 1
+            muted: true
         }
-        onMetaDataChanged: {
-            if (fakePlayer.playbackState === MediaPlayer.PlayingState) {
-                processNextFile(baseModel);
-            }
-        }
-    }
 
-    function generator(callback) {
-        if (!fakePlayer.playbackStateChanged.connected) {
-            fakePlayer.onPlaybackStateChanged.connect(function() {
-                if (fakePlayer.playbackState === MediaPlayer.PlayingState) {
-                    var metaData = fakePlayer.metaData;
-
-                    if (!metaData.isEmpty()) {
-                        var title = metaData.stringValue("0") || "Unknown Title";
-                        var album = metaData.stringValue("18") || "Unknown Album";
-                        var albumArtist = metaData.stringValue("19");
-                        var contributingArtist = metaData.stringValue("20");
-
-                        var finalArtist = albumArtist || contributingArtist || "Unknown Artist";
-
-                        callback(title, album, finalArtist);
-                        console.log("Metadata obtained:", title, album, finalArtist);
-                    } else {
-                        callback(null, null, null);
-                    }
-                }
-            });
-        } else {
-            if (fakePlayer.playbackState === MediaPlayer.PlayingState) {
-                var metaData = fakePlayer.metaData;
-
-                if (!metaData.isEmpty()) {
-                    var title = metaData.stringValue("0") || "Unknown Title";
-                    var album = metaData.stringValue("18") || "Unknown Album";
-                    var albumArtist = metaData.stringValue("19");
-                    var contributingArtist = metaData.stringValue("20");
-
-                    var finalArtist = albumArtist || contributingArtist || "Unknown Artist";
-
-                    callback(title, album, finalArtist);
-                    console.log("Metadata obtained:", title, album, finalArtist);
+        onPlaybackStateChanged: {
+            if (!waitingMetaData) {
+                if (fakePlayer.mediaStatus === 5) {
+                    console.log("An issue occurred while loading the file", "status player Stalled")
+                    waitingMetaData = true
+                    fakePlayer.stop()
+                    forcedWait.start()
                 } else {
-                    callback(null, null, null);
+                    console.log("Metadata extraction function executed")
+                    generatorTWO(baseModel)
                 }
             }
         }
     }
 
-    function processNextFile(model) {
-        console.log("There are", model.count, "elements in the model");
-        if (tracks.count < model.count && countFilesAnalyzed === tracks.count) {
-            console.log("First filter successful. FilesAnalyzed:", countFilesAnalyzed, "model contains", model.count);
+    function generatorTWO(model) {
+        if (tracks.count === countFilesAnalyzed) {
+            waitingMetaData = true
+            if (fakePlayer.mediaStatus !== MediaPlayer.InvalidMedia &&
+                fakePlayer.mediaStatus !== MediaPlayer.LoadingMedia &&
+                fakePlayer.mediaStatus !== MediaPlayer.StalledMedia &&
+                fakePlayer.mediaStatus !== MediaPlayer.NoMedia) {
 
-            fakePlayer.source = model.get(countFilesAnalyzed).filePath;
+                console.log("Media status is valid")
 
-            generator(function(titleFile, album, artist) {
-                console.log("First value", titleFile, countFilesAnalyzed);
+                if (fakePlayer.mediaStatus === MediaPlayer.BufferedMedia) {
+                    var metaData = fakePlayer.metaData
+                    console.log("Media in BufferedMedia status")
+                    if (!metaData.isEmpty()) {
 
-                tracks.append({
-                    filePath: model.get(countFilesAnalyzed).filePath,
-                              title: titleFile,
-                              album: album,
-                              artist: artist,
-                              fileName: model.get(countFilesAnalyzed).fileName
-                });
-                countFilesAnalyzed = countFilesAnalyzed + 1;
-                trc.start()
-            });
+                        var title = metaData.stringValue("0") || "Unknown Title"
+                        var album = metaData.stringValue("18") || "Unknown Album"
+                        var albumArtist = metaData.stringValue("19")
+                        var contributingArtist = metaData.stringValue("20")
+                        var finalArtist = albumArtist || contributingArtist || "Unknown Artist"
+
+                        tracks.append({
+                            filePath: model.get(countFilesAnalyzed).filePath,
+                                      title: title,
+                                      album: album,
+                                      artist: finalArtist,
+                                      fileName: model.get(countFilesAnalyzed).fileName
+                        })
+
+                        countFilesAnalyzed += 1
+                        console.log("Data was added successfully")
+
+                        if (fakePlayer.error === MediaPlayer.NoError) {
+                            processorNextFile.start()
+                            console.log("Started processorNextFile")
+                        } else {
+                            console.log("An unknown error occurred")
+                            forcedWait.start()
+                        }
+
+                    } else {
+                        console.log("Metadata is not loaded yet")
+                    }
+                } else {
+                    console.log("A buffer error occurred")
+                    forcedWait.start()
+                        console.log("Timer started to retry")
+                }
+                } else {
+                    console.log("Error in media status verification")
+                    forcedWait.start()
+                        console.log("Timer started to retry")
+                }
         } else {
-            trc.stop();
-            fakePlayer.autoPlay = false;
-            fakePlayer.stop();
-            console.log("All files have been processed");
+            console.log("This file has already been added")
         }
     }
-
-
 
     Timer {
-        id: trc
-        interval: 400
+        id: forcedWait
+        interval: 100
         running: false
         repeat: false
         onTriggered: {
-            if (countFilesAnalyzed < baseModel.count) {
-                fakePlayer.source = baseModel.get(countFilesAnalyzed).filePath;
-                fakePlayer.play();
+            console.log("Metadata extraction function executed")
+            generatorTWO(baseModel)
+        }
+    }
+
+    function detonator() {
+        processorNextFile.start()
+    }
+
+    Timer {
+        id: processorNextFile
+        interval: 50
+        running: false
+        repeat: false
+        onTriggered: {
+            if (fakePlayer.error === MediaPlayer.NoError) {
+                if (countFilesAnalyzed < baseModel.count) {
+                    waitingMetaData = false
+                    console.log("Attempting to add a new file")
+                    fakePlayer.source = baseModel.get(countFilesAnalyzed).filePath
+                    console.log("File added successfully")
+                    fakePlayer.play()
+                    console.log("Play started successfully")
+                } else {
+                    console.log("All files have been processed")
+                    stop()
+                    fakePlayer.stop()
+                    forcedWait.stop()
+                }
             } else {
-                stop()
-                fakePlayer.stop();
+                console.log("An unknown error occurred, attempting to resolve it")
+                fakePlayer.stop()
+                processorNextFile.start()
             }
         }
     }
 }
+
 
 
 
