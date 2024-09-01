@@ -13,6 +13,8 @@ Item {
     property string currentFileUrl: ""
     property bool showFavoritesOnly: false
     property bool allDirectoriesProcessed: false
+    property bool trackEnds: mediaPlayer.playbackState === 1 ? mediaPlayer.duration === mediaPlayer.position : false
+    property bool isActivePlayList: false
 
     Settings {
         id: favorites
@@ -96,31 +98,14 @@ Item {
         id: mediaPlayer
         audioOutput: AudioOutput { id: audioOutput }
         source: currentFileUrl
-        onMetaDataChanged: {
-            var metaData = mediaPlayer.metaData
-            if (!metaData.isEmpty()) {
-                console.log("Audio file metadata:")
 
-                // Print all available keys
-                var keys = metaData.keys()
-                for (var i = 0; i < keys.length; ++i) {
-                    var key = keys[i]
-                    console.log("Key: " + key + " Value: " + metaData.stringValue(key))
-                }
+    }
 
-                // Use keys as text strings
-                var title = metaData.stringValue("0")
-                var artist = metaData.stringValue("20") ? metaData.stringValue("20") : metaData.stringValue("19")
-                var album = metaData.stringValue("18")
-                var genre = metaData.stringValue("12")
-                fg.source = metaData.value("24")
-                console.log("Title: " + title)
-                console.log("Artist: " + artist)
-                console.log("Album: " + album)
-                console.log("Genre: " + genre)
-            } else {
-                console.log("No metadata available.")
-            }
+    onTrackEndsChanged: {
+        if (trackEnds && isActivePlayList) {
+            trackListView.currentIndex += 1
+            currentFileUrl = metaDateGenerator.tracksModel.get(trackListView.currentIndex).filePath
+            mediaPlayer.play();
         }
     }
 
@@ -281,7 +266,9 @@ Item {
                 onClicked: {
                     trackListView.currentIndex = index;
                     currentFileUrl = model.filePath
+                    isActivePlayList = true
                     mediaPlayer.play();
+
                 }
             }
         }
