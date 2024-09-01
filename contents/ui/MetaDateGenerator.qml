@@ -1,5 +1,6 @@
 import QtMultimedia
 import QtQuick 2.4
+import QtCore
 
 Item {
 
@@ -7,6 +8,22 @@ Item {
     property ListModel baseModel: []
     property alias tracksModel: tracks
     property bool waitingMetaData: false
+    property int retrysMax: 0
+    property bool observer: fakePlayer.mediaStatus === 5
+
+    signal metaDataOfFilesAnd
+
+    Settings {
+        id: BixMetadConfg
+        category: "BixMetadConfg"
+        // property var files: []
+    }
+
+    Settings {
+        id: BixConf
+        category: "BixConf"
+        // property var files: []
+    }
 
     ListModel {
         id: tracks
@@ -23,7 +40,7 @@ Item {
 
         onPlaybackStateChanged: {
             if (!waitingMetaData) {
-                if (fakePlayer.mediaStatus === 5) {
+                if (observer) {
                     console.log("An issue occurred while loading the file", "status player Stalled")
                     waitingMetaData = true
                     fakePlayer.stop()
@@ -39,12 +56,9 @@ Item {
     function generatorTWO(model) {
         if (tracks.count === countFilesAnalyzed) {
             waitingMetaData = true
-            if (fakePlayer.mediaStatus !== MediaPlayer.InvalidMedia &&
-                fakePlayer.mediaStatus !== MediaPlayer.LoadingMedia &&
-                fakePlayer.mediaStatus !== MediaPlayer.StalledMedia &&
-                fakePlayer.mediaStatus !== MediaPlayer.NoMedia) {
+            if (fakePlayer.mediaStatus !== 2 && fakePlayer.mediaStatus !== 1 ) {
 
-                console.log("Media status is valid")
+                console.log("Media status is valid. LoadingMedia	The media is currently being loaded.")
 
                 if (fakePlayer.mediaStatus === MediaPlayer.BufferedMedia) {
                     var metaData = fakePlayer.metaData
@@ -56,7 +70,7 @@ Item {
                         var albumArtist = metaData.stringValue("19")
                         var contributingArtist = metaData.stringValue("20")
                         var finalArtist = albumArtist || contributingArtist || "Unknown Artist"
-
+                        var finalDates = "["+ title + "],[" + album + "],[" + finalArtist +"],["+ model.get(countFilesAnalyzed).filePath + "]"
                         tracks.append({
                             filePath: model.get(countFilesAnalyzed).filePath,
                                       title: title,
@@ -64,16 +78,17 @@ Item {
                                       artist: finalArtist,
                                       fileName: model.get(countFilesAnalyzed).fileName
                         })
-
+                        metadConfg.setValue(model.get(countFilesAnalyzed).fileName, finalDates)
                         countFilesAnalyzed += 1
                         console.log("Data was added successfully")
 
-                        if (fakePlayer.error === MediaPlayer.NoError) {
+                        if (fakePlayer.mediaStatus !== 5) {
+                            //fakePlayer.stop()
                             processorNextFile.start()
-                            console.log("Started processorNextFile")
+                            console.log("Started processorNextFile", fakePlayer.mediaStatus, fakePlayer.error, fakePlayer.playbackState, fakePlayer.error, fakePlayer.bufferProgress, fakePlayer.activeAudioTrack, fakePlayer.hasAudio, fakePlayer.position, fakePlayer.source, fakePlayer.duration, fakePlayer.seekable, fakePlayer.activeAudioTrack, fakePlayer.metaData,  )
                         } else {
                             console.log("An unknown error occurred")
-                            forcedWait.start()
+                            forcedWaitNext.start()
                         }
 
                     } else {
@@ -84,22 +99,50 @@ Item {
                     forcedWait.start()
                         console.log("Timer started to retry")
                 }
-                } else {
-                    console.log("Error in media status verification")
-                    forcedWait.start()
-                        console.log("Timer started to retry")
-                }
+            } else {
+                console.log("Error in media status verification")
+                forcedWait.start()
+                    console.log("Timer started to retry")
+            }
         } else {
             console.log("This file has already been added")
         }
     }
-
     Timer {
-        id: forcedWait
-        interval: 100
+        id:forcedWaitNext
+        interval: 20
         running: false
         repeat: false
         onTriggered: {
+            if (fakePlayer.mediaStatus !== 5) {
+                console.log("stagnation resolved")
+                processorNextFile.start()
+                retrysMax = 0
+            } else {
+                retrysMax = retrysMax + 1
+                if (retrysMax > 3) {
+                    retrysMax = 0
+                    console.log("pauses to try to end the stalemate without breaking the player")
+                    fakePlayer.pause()
+                    processorNextFile.start()
+                } else {
+                    console.log("waiting for the stalemate to end, code ", fakePlayer.mediaStatus)
+                    forcedWaitNext.start()
+                }
+
+            }
+
+        }
+    }
+    Timer {
+        id: forcedWait
+        interval: 10
+        running: false
+        repeat: false
+        onTriggered: {
+            if (!fakePlayer.playing) {
+                fakePlayer.play()
+            }
             console.log("Metadata extraction function executed")
             generatorTWO(baseModel)
         }
@@ -111,25 +154,30 @@ Item {
 
     Timer {
         id: processorNextFile
-        interval: 50
+        interval: 10
         running: false
         repeat: false
         onTriggered: {
-            if (fakePlayer.error === MediaPlayer.NoError) {
+            if (!(fakePlayer.mediaStatus === 5)) {
                 if (countFilesAnalyzed < baseModel.count) {
                     waitingMetaData = false
+                    processorNextFile.interval = 1
                     console.log("Attempting to add a new file")
                     fakePlayer.source = baseModel.get(countFilesAnalyzed).filePath
-                    console.log("File added successfully")
+                    console.log("File added successfully", fakePlayer.mediaStatus, fakePlayer.error, fakePlayer.playbackState, fakePlayer.error, fakePlayer.bufferProgress, fakePlayer.activeAudioTrack, fakePlayer.hasAudio, fakePlayer.position, fakePlayer.source, fakePlayer.duration, fakePlayer.seekable, fakePlayer.activeAudioTrack, fakePlayer.metaData)
                     fakePlayer.play()
-                    console.log("Play started successfully")
+                    console.log("Play started successfully", fakePlayer.mediaStatus, fakePlayer.error, fakePlayer.playbackState, fakePlayer.error, fakePlayer.bufferProgress, fakePlayer.activeAudioTrack, fakePlayer.hasAudio, fakePlayer.position, fakePlayer.source, fakePlayer.duration, fakePlayer.seekable, fakePlayer.activeAudioTrack, fakePlayer.metaData)
                 } else {
                     console.log("All files have been processed")
                     stop()
                     fakePlayer.stop()
                     forcedWait.stop()
+                        bixConf.setValue("filesMetadatesLoaded", countFilesAnalyzed)
+                        bixConf.setValue("extractedMetadata", true)
+                        metaDataOfFilesAnd()
                 }
             } else {
+                processorNextFile.interval = processorNextFile.interval < 500 ? processorNextFile.interval * 2 : 1000
                 console.log("An unknown error occurred, attempting to resolve it")
                 fakePlayer.stop()
                 processorNextFile.start()
@@ -137,7 +185,3 @@ Item {
         }
     }
 }
-
-
-
-
