@@ -27,6 +27,8 @@ import Qt5Compat.GraphicalEffects
 
 Item {
     id: root
+
+
     Layout.minimumWidth: showTrack ? musicTrack.implicitWidth < musicTrack.width ? bar.implicitWidth +  musicTrack.implicitWidth + 20 : bar.implicitWidth +  musicTrack.width + 20 : isPlaying ? bar.width : 22
 
 
@@ -64,7 +66,23 @@ Item {
         hoverEnabled: true
 
         onClicked: {
-            dashWindow.visible = !dashWindow.visible;
+            if (dashWindow.visible === true) {
+               dashWindow.visible = !dashWindow.visible;
+            } else {
+                if (dashWindow.isfocus !== undefined) {
+                    if (!dashWindow.isfocus) {
+                        dashWindow.visible = !dashWindow.visible;
+                        dashWindow.visible = !dashWindow.visible;
+                    } else {
+                        dashWindow.visible = !dashWindow.visible;
+                    }
+                } else {
+                    dashWindow.visible = !dashWindow.visible;
+                }
+
+
+            }
+
         }
     }
 
