@@ -49,11 +49,11 @@ Item {
                 }
                 if (numIndexDirs < dirs.length) {
                     numIndexDirs =  numIndexDirs +1;
-                    filesModel.reload()
-                } else {
-                    if (filesModel.status === FolderListModel.Ready && loadFullFiles) {
-                        allDirectoriesProcessed = true
-                    }
+                    //loadFullFiles = false
+                    //filesModel.reload()
+                    console.log("se ejecuto ", numIndexDirs, loadFullFiles)
+                    allDirectoriesProcessed = numIndexDirs === dirs.length ? loadFullFiles : false
+                    console.log(allDirectoriesProcessed)
                 }
             }
         }
