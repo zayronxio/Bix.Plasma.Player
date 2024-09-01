@@ -18,7 +18,7 @@ For support, email zayronxio@gmail.com
 
 ## License
 
-[ CC BY 4.0 Deed ](https://creativecommons.org/licenses/by/4.0/deed.es)
+[ AGPL 3.0 ](https://www.gnu.org/licenses/agpl-3.0.txt)
 
 ## Working Features:
 
