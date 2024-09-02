@@ -182,21 +182,33 @@ Item {
         anchors.horizontalCenter: trackListView.horizontalCenter
         anchors.bottom: parent.bottom
 
+
         Rectangle {
+            id: cover
             color: "blue"
             width: controls.height * 0.8
             height: width
             radius: height / 6
-            anchors.left: controls.left
-            anchors.leftMargin: (controls.height - width) / 2
+            visible: false
+            anchors.left: backgroundSidebar.right
+            anchors.leftMargin: 10
             anchors.verticalCenter: controls.verticalCenter
+        }
+        Kirigami.Icon {
+            width: cover.width
+            height: cover.height
+            anchors.centerIn: cover
+            source: mediaPlayer.metaData.value("24") === undefined ? "/home/zaron/.local/share/plasma/plasmoids/Bix.Plasma.Player/contents/images/covergeneric.svg" : mediaPlayer.metaData.value("24");
+
         }
         Row  {
             id: control
-            width: parent.width - controls.height * 1.1
+            width: height*3 + 16
             height: 24
             anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
+            anchors.left: cover.right
+            anchors.leftMargin: height/3
+            spacing: 8
 
             Kirigami.Icon {
                 id: prev
@@ -239,6 +251,42 @@ Item {
                     }
                 }
             }
+        }
+        Text {
+            text: metaDateGenerator.tracksModel.get(trackListView.currentIndex).title;
+            anchors.bottom: progressBarBase.top
+            font.pixelSize: 12
+            color: Kirigami.Theme.textColor
+            font.bold: true
+            anchors.horizontalCenter: progressBarBase.horizontalCenter
+        }
+        Text {
+            text: metaDateGenerator.tracksModel.get(trackListView.currentIndex).artist
+            anchors.top: progressBarBase.bottom
+            color: Kirigami.Theme.textColor
+            font.pixelSize: 11
+            anchors.horizontalCenter: progressBarBase.horizontalCenter
+        }
+        Rectangle {
+            id: progressBarBase
+            color: Kirigami.Theme.textColor
+            opacity: 0.4
+            height: 5
+            radius: height/2
+            width: 190
+            anchors.left: control.right
+            anchors.leftMargin: 16
+            anchors.verticalCenter: parent.verticalCenter
+        }
+        Rectangle {
+            id: progressBar
+            color: Kirigami.Theme.textColor
+            opacity: 1
+            height: 5
+            radius: height/2
+            width: (mediaPlayer.position / mediaPlayer.duration) * progressBarBase.width
+            anchors.left: progressBarBase.left
+            anchors.verticalCenter: progressBarBase.verticalCenter
         }
     }
 
