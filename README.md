@@ -26,14 +26,18 @@ For support, email zayronxio@gmail.com
 - Play, Next, and Previous buttons
 - Interface and behavior similar to a standalone app
 - MP3 player
+- Metadata reader
+- Album cover image loader
+- Progress bar
 
 ## To-Do:
 - Side panel doesn't display information yet
-- Metadata reader
-- Album cover image loader
+- loading information from the configuration file without scanning again
 - Playlist generator
-- Progress bar
 - The plasmoid's bottom section should display the title, artist, and other data, but this is not yet functional
+- button favorites
+- Shuffle Play mode button
+- search still not working
 - Button to move the plasmoid and minimize it
 
 ## Features That Might Be Added as Extras:
