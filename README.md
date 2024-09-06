@@ -29,16 +29,18 @@ For support, email zayronxio@gmail.com
 - Metadata reader
 - Album cover image loader
 - Progress bar
-
-## To-Do:
-- Side panel doesn't display information yet
-- loading information from the configuration file without scanning again
-- Playlist generator
-- The plasmoid's bottom section should display the title, artist, and other data, but this is not yet functional
 - button favorites
 - Shuffle Play mode button
-- search still not working
+- search
+- The plasmoid's bottom section should display the title, artist
+- loading information from the configuration file without scanning again
+
+## To-Do:
+- Side panel doesn't display complete information yet
+- Playlist generator
 - Button to move the plasmoid and minimize it
+- interposed window detector
+- fixes in the behavior of the player in terms of the index, since it currently fails when changing from all music to Favorites
 
 ## Features That Might Be Added as Extras:
 - Album cover image manager from the web

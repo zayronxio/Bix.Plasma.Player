@@ -35,6 +35,7 @@ PlasmoidItem {
 
     signal reset
 
+
     preferredRepresentation: compactRepresentation
     compactRepresentation: compactRepresentation
     fullRepresentation: compactRepresentation

@@ -6,11 +6,11 @@ import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.private.mpris as Mpris
 import Qt5Compat.GraphicalEffects
 import org.kde.kirigami as Kirigami
 import org.kde.ksvg 1.0 as KSvg
 //import QtQuick.Controls 2.15
+//import QtQuick.Effects
 
 Item {
     id: main
@@ -22,10 +22,6 @@ Item {
     onVisibleChanged: {
         root.visible = !root.visible
     }
-
-    //InfoMusic {
-      //  id: infoMusic
-    //}
 
     KSvg.FrameSvgItem {
         id : mediaSvg
@@ -43,19 +39,7 @@ Item {
         imagePath: "dialogs/background"
     }
 
-    Mpris.Mpris2Model {
-        id: mpris2Model
-    }
 
-    function next() {
-        mpris2Model.currentPlayer.Next()
-    }
-    function playPause() {
-        mpris2Model.currentPlayer.PlayPause()
-    }
-    function prev() {
-        mpris2Model.currentPlayer.Previous()
-    }
     Plasmoid.status: PlasmaCore.Types.PassiveStatus
 
     PlasmaCore.Dialog {
@@ -146,25 +130,31 @@ Item {
                 return calculatePosition(x, y);
             }
         }
+        function foceFocus() {
 
+        }
         FocusScope {
             id: rootItem
             Layout.minimumWidth:  630
             Layout.maximumWidth:  minimumWidth
-            Layout.minimumHeight: 480
+            Layout.minimumHeight: 450
             Layout.maximumHeight: minimumHeight
             focus: true
 
             onActiveFocusChanged: {
                 isfocus = !isfocus
+                //root.dashWindowIsFocus = isfocus
                 console.log("focus is", isfocus)
             }
+
 
             ListMultimedia {
                 id: listMultimedia
                 width: parent.width
                 height: parent.height
                 anchors.centerIn: parent
+                //visible: false
+
             }
        }
     }
