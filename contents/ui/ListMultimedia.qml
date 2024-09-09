@@ -819,7 +819,7 @@ Item {
     }
     Text {
         id: headListOne
-        text: "Title / Arstis"
+        text: "Title / Artist"
         height: 20
         width: trackListView.width/2
         font.pixelSize: 14
