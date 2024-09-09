@@ -18,10 +18,16 @@ Item {
 
     property bool plasmoidFocus: true
     property bool isfocus: false
+    property int initialX: 0
+    property int initialY: 0
+    property int valorx: 0
+    property bool minimized: true
+    property bool firtDesminimizar: true
 
     onVisibleChanged: {
         root.visible = !root.visible
     }
+
 
     KSvg.FrameSvgItem {
         id : mediaSvg
@@ -52,18 +58,7 @@ Item {
 
 
 
-        onVisibleChanged: {
-            if (visible) {
-                var pos = popupPosition(width, height);
-                x = pos.x;
-                y = pos.y;
-                timer.start(); // Start the timer when the window is shown
-                heightAnimation.start(); // Start the animation when the window is shown
-            } else {
-                timer.stop(); // Stop the timer when the window is hidden
-                heightAnimation.stop(); // Stop the animation when the window is hidden
-            }
-        }
+
 
 
         onHeightChanged: {
@@ -94,41 +89,10 @@ Item {
             function calculatePosition(x, y) {
                 return Qt.point(x, y);
             }
+            x = horizMidPoint - width / 2;
+            y = vertMidPoint - height / 2;
+            return calculatePosition(x, y);
 
-            if (menuPos === 0) {
-                switch (plasmoid.location) {
-                    case PlasmaCore.Types.BottomEdge:
-                        var x = appletTopLeft.x < screen.width - width ? appletTopLeft.x : screen.width - width - 8;
-                        var y = screen.height - height - panelH - Kirigami.Units.gridUnit / 2;
-                        return calculatePosition(x, y);
-
-                    case PlasmaCore.Types.TopEdge:
-                        x = appletTopLeft.x < screen.width - width ? appletTopLeft.x + panelW - Kirigami.Units.gridUnit / 3 : screen.width - width;
-                        y = panelH + Kirigami.Units.gridUnit / 2;
-                        return calculatePosition(x, y);
-
-                    case PlasmaCore.Types.LeftEdge:
-                        x = appletTopLeft.x + panelW + Kirigami.Units.gridUnit / 2;
-                        y = appletTopLeft.y < screen.height - height ? appletTopLeft.y : appletTopLeft.y - height + iconUser.height / 2;
-                        return calculatePosition(x, y);
-
-                    case PlasmaCore.Types.RightEdge:
-                        x = appletTopLeft.x - width - Kirigami.Units.gridUnit / 2;
-                        y = appletTopLeft.y < screen.height - height ? appletTopLeft.y : screen.height - height - Kirigami.Units.gridUnit / 5;
-                        return calculatePosition(x, y);
-
-                    default:
-                        return;
-                }
-            } else if (menuPos === 2) {
-                x = screen.width - width / 2;
-                y = screen.height - height - panelH - Kirigami.Units.gridUnit / 2;
-                return calculatePosition(x, y);
-            } else if (menuPos === 1) {
-                x = horizMidPoint - width / 2;
-                y = vertMidPoint - height / 2;
-                return calculatePosition(x, y);
-            }
         }
         function foceFocus() {
 
@@ -140,6 +104,61 @@ Item {
             Layout.minimumHeight: 450
             Layout.maximumHeight: minimumHeight
             focus: true
+
+            Kirigami.Icon {
+                id: moveIcon
+                source: "transform-move"
+                width: 22
+                height: 22
+                anchors.top: parent.top
+                anchors.topMargin: 5
+                anchors.right:  parent.right
+                anchors.rightMargin: 8
+                MouseArea {
+                    anchors.fill:  parent
+                    hoverEnabled: false
+                    //drag.target: parent
+                    onPressed: {
+                        // Guarda la posición X al momento de presionar
+                        initialX = mouseX - root.x
+                        initialY = mouseY - root.y
+
+                        console.log("Clic presionado en X:", initialX)
+                    }
+
+                    onPositionChanged: {
+                        if (pressed) {
+                            // Ajusta la posición del rectángulo en base a la posición del mouse mientras se mantiene presionado
+                            root.x += mouseX
+                            root.y  += mouseY
+                            //initialX = root.x
+                            //initialY = root.y
+                            valorx = mouseX
+                            console.log("Posición X mientras se mueve:", parent.x)
+                        }
+                    }
+
+                }
+            }
+
+            Kirigami.Icon {
+                source: "window-minimize"
+                width: 22
+                height: 22
+                anchors.verticalCenter: moveIcon.verticalCenter
+                anchors.right:  moveIcon.left
+                anchors.rightMargin: 8
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log("el valor es",root.visible)
+                        root.visible = !root.visible
+                        minimized = true
+                        console.log("el valor es",root.visible)
+                    }
+                }
+
+            }
 
             onActiveFocusChanged: {
                 isfocus = !isfocus

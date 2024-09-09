@@ -47,7 +47,6 @@ Item {
 
     //Plasmoid.status: dashWindow && dashWindow.visible ? PlasmaCore.Types.RequiresAttentionStatus : PlasmaCore.Types.PassiveStatus
 
-
     Kirigami.Icon {
         id: buttonIcon
 
@@ -66,21 +65,18 @@ Item {
         hoverEnabled: true
 
         onClicked: {
-            if (dashWindow.visible === true) {
-               dashWindow.visible = !dashWindow.visible;
+            if (dashWindow.minimized) {
+                dashWindow.visible = !dashWindow.visible;
+                dashWindow.minimized = false
             } else {
-                if (dashWindow.isfocus !== undefined) {
-                    if (!dashWindow.isfocus) {
-                        dashWindow.visible = !dashWindow.visible;
-                        dashWindow.visible = !dashWindow.visible;
-                    } else {
-                        dashWindow.visible = !dashWindow.visible;
-                    }
+                console.log(dashWindow.isfocus, "pruenas", dashWindow.minimized)
+                if (!dashWindow.isfocus) {
+                    dashWindow.visible = !dashWindow.visible;
+                    dashWindow.visible = !dashWindow.visible;
                 } else {
                     dashWindow.visible = !dashWindow.visible;
+                    dashWindow.minimized = true
                 }
-
-
             }
 
         }
