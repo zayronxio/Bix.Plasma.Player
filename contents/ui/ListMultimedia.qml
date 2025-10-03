@@ -27,19 +27,28 @@ Item {
     signal toggleFavorite(url filePath)
 
     onToggleFavorite: function (filePath) {
-        var index
+        var decodedPath = decodeURIComponent(filePath); // decodificar URL
+        var index = -1;
+
         for (var p = 0; p < listGeneral.count; p++) {
-            if (filePath === listGeneral.get(p).filePath) {
-                index = p
-                break
+            if (decodedPath === decodeURIComponent(listGeneral.get(p).filePath)) {
+                index = p;
+                break;
             }
         }
 
-        var newFavorite = !listGeneral.get(index).isFavorite  // alternar favorito
-        listGeneral.setProperty(index, "isFavorite", newFavorite)
-        dbHelper.updateFavorite(filePath, newFavorite)
-        console.log("se agrego a favoritos",filePath,newFavorite,listGeneral.get(index).filePath, listGeneral.get(index).isFavorite)
+        if (index === -1) {
+            console.log("⚠️ No se encontró el archivo en la lista:", decodedPath);
+            return;
+        }
+
+        var newFavorite = !listGeneral.get(index).isFavorite;
+        listGeneral.setProperty(index, "isFavorite", newFavorite);
+        dbHelper.updateFavorite(decodedPath, newFavorite);
+
+        console.log("✅ Favorito actualizado:", decodedPath, newFavorite);
     }
+
 
     QtObject {
         id: dbHelper

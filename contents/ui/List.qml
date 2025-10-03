@@ -108,7 +108,7 @@ Item {
                         trackTitle = model.title
                         trackArtist = model.artist
                         trackAlbum = model.album
-                        trackIsFavorite = model.isFavorite === "true"
+                        trackIsFavorite = model.isFavorite
                         currentList  = listModel
                         chargeTrack(currentTrack,trackTitle,trackArtist,trackAlbum,trackIsFavorite)
                     }
@@ -128,7 +128,7 @@ Item {
                         trackTitle = model.title
                         trackArtist = model.artist
                         trackAlbum = model.Album
-                        trackIsFavorite = model.isFavorite === "true"
+                        trackIsFavorite = model.isFavorite
                         currentList  = listModel
                         chargeTrack(currentTrack,trackTitle,trackArtist,trackAlbum,trackIsFavorite)
                     }

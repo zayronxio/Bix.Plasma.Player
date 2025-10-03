@@ -47,7 +47,7 @@ Item {
     function buildFavoritesList(){
         resultModel.clear()
         for (var h = 0; h < origenModel.count; h++) {
-            if (origenModel.get(h).isFavorite === "true") {  // ← debe ser comparativa ya que es string "==="
+            if (origenModel.get(h).isFavorite) {
                 resultModel.append({
                     artist: origenModel.get(h).artist,
                                    album: origenModel.get(h).album,
