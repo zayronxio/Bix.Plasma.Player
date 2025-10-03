@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="256"
+   height="256"
+   viewBox="0 0 67.733332 67.733333"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="maskArt.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.78127804"
+     inkscape:cx="-113.27593"
+     inkscape:cy="168.31396"
+     inkscape:window-width="1920"
+     inkscape:window-height="1000"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter952"
+       x="-0.30682734"
+       y="-0.30682734"
+       width="1.6136547"
+       height="1.6136547">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="8.6292715"
+         id="feGaussianBlur954" />
+    </filter>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3876">
+      <rect
+         style="fill:#1775e5;stroke:none;stroke-width:0.0412754;stroke-linecap:round;stroke-linejoin:round"
+         id="rect3878"
+         width="52.834309"
+         height="52.819744"
+         x="-19.866594"
+         y="7.4821758"
+         rx="0"
+         ry="0" />
+    </clipPath>
+  </defs>
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="mix-blend-mode:normal;fill:#1775e5;stroke:#c82ef2;stroke-width:0.0529167;stroke-linecap:round;stroke-linejoin:round;filter:url(#filter952)"
+       id="path396"
+       cx="33.817867"
+       cy="33.874462"
+       r="33.792149"
+       transform="matrix(1.2820373,0,0,1.2820373,25.470627,-9.5885679)"
+       clip-path="url(#clipPath3876)" />
+  </g>
+</svg>

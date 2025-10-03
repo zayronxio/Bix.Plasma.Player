@@ -1,51 +1,37 @@
-/***************************************************************************
- *   Copyright (C) 2014-2015 by Eike Hein <hein@kde.org>                   *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
- ***************************************************************************/
-
-import QtQuick 2.0
+import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts 1.1
-
-import org.kde.plasma.plasmoid
-
-import org.kde.plasma.core 2.0 as PlasmaCore
-
 import org.kde.kirigami as Kirigami
-import org.kde.ksvg 1.0 as KSvg
+import org.kde.plasma.plasmoid
 
 PlasmoidItem {
 
-    id: wrapper
+  id: wrapper
 
-    anchors.fill: parent
+  anchors.fill: parent
 
-    signal reset
+  property var buttonPosition
+  property var buttonSizes
+  property bool menuActive
+
+  property int idlistActive: 1
+  property string listActive: "All Tracks"
+
+  signal reset
 
 
-    preferredRepresentation: compactRepresentation
-    compactRepresentation: compactRepresentation
-    fullRepresentation: compactRepresentation
+  //property bool dashWindowIsFocus: true
+
+  preferredRepresentation: compactRepresentation
+  compactRepresentation: compactRepresentation
+  fullRepresentation: compactRepresentation
 
 
 
-    Component {
-        id: compactRepresentation
-        CompactRepresentation {}
-    }
+  Component {
+    id: compactRepresentation
+    CompactRepresentation {}
+  }
 
 
 }

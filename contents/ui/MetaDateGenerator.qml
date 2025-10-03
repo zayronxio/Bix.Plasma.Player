@@ -1,6 +1,5 @@
 import QtMultimedia
 import QtQuick 2.4
-import QtCore
 
 Item {
 
@@ -16,18 +15,6 @@ Item {
 
     signal metaDataOfFilesAnd
 
-    Settings {
-        id: bixMetadConfg
-        category: "BixMetadConfg"
-        // property var files: []
-    }
-
-    Settings {
-        id: bixConf
-        category: "BixConf"
-        // property var files: []
-    }
-
     ListModel {
         id: tracks
     }
@@ -39,21 +26,21 @@ Item {
     MediaPlayer {
         id: fakePlayer
         autoPlay: false
-        source: baseModel.get(0).filePath
+        source: baseModel.count > 0 ? baseModel.get(0).filePath : ""
         audioOutput: AudioOutput {
             id: dynamicaudioOt
-            muted: false
+            muted: true
         }
 
         onPlaybackStateChanged: {
             if (!waitingMetaData) {
                 if (observer) {
-                    console.log("An issue occurred while loading the file", "status player Stalled")
+                    //console.log("An issue occurred while loading the file", "status player Stalled")
                     waitingMetaData = true
                     fakePlayer.stop()
                     forcedWait.start()
                 } else {
-                    console.log("Metadata extraction function executed")
+                    //console.log("Metadata extraction function executed")
                     generatorTWO(baseModel)
                 }
             }
@@ -65,11 +52,11 @@ Item {
             waitingMetaData = true
             if (fakePlayer.mediaStatus !== 2 && fakePlayer.mediaStatus !== 1 ) {
 
-                console.log("Media status is valid. LoadingMedia	The media is currently being loaded.")
+                //console.log("Media status is valid. LoadingMedia	The media is currently being loaded.")
 
                 if (fakePlayer.mediaStatus === MediaPlayer.BufferedMedia) {
                     var metaData = fakePlayer.metaData
-                    console.log("Media in BufferedMedia status")
+                    //console.log("Media in BufferedMedia status")
                     if (!metaData.isEmpty()) {
 
                         var title = metaData.stringValue("0") || "Unknown Title"
@@ -88,9 +75,9 @@ Item {
                                 fileName: model.get(countFilesAnalyzed).fileName,
                                 isFavorite: "false"
                             })
-                            bixMetadConfg.setValue(countFilesAnalyzed + prevfilesAnalyzed, finalDates)
+                            //bixMetadConfg.setValue(countFilesAnalyzed + prevfilesAnalyzed, finalDates)
                             countFilesAnalyzed += 1
-                            console.log("Data was added successfully")
+                            //console.log("Data was added successfully")
                         } else {
                             tracks.append({
                                 filePath: model.get(countFilesAnalyzed).filePath,
@@ -100,7 +87,7 @@ Item {
                                           fileName: model.get(countFilesAnalyzed).fileName,
                                           isFavorite: "false"
                             })
-                            bixMetadConfg.setValue(countFilesAnalyzed, finalDates)
+                            //bixMetadConfg.setValue(countFilesAnalyzed, finalDates)
                             countFilesAnalyzed += 1
                             console.log("Data was added successfully")
 
@@ -109,27 +96,25 @@ Item {
                         if (fakePlayer.mediaStatus !== 5) {
                             //fakePlayer.stop()
                             processorNextFile.start()
-                            console.log("Started processorNextFile", fakePlayer.mediaStatus, fakePlayer.error, fakePlayer.playbackState, fakePlayer.error, fakePlayer.bufferProgress, fakePlayer.activeAudioTrack, fakePlayer.hasAudio, fakePlayer.position, fakePlayer.source, fakePlayer.duration, fakePlayer.seekable, fakePlayer.activeAudioTrack, fakePlayer.metaData,  )
                         } else {
-                            console.log("An unknown error occurred")
+                            //console.log("An unknown error occurred")
                             forcedWaitNext.start()
                         }
 
                     } else {
-                        console.log("Metadata is not loaded yet")
                     }
                 } else {
-                    console.log("A buffer error occurred")
+                    //console.log("A buffer error occurred")
                     forcedWait.start()
                         console.log("Timer started to retry")
                 }
             } else {
-                console.log("Error in media status verification")
+                //console.log("Error in media status verification")
                 forcedWait.start()
                     console.log("Timer started to retry")
             }
         } else {
-            console.log("This file has already been added")
+            //console.log("This file has already been added")
             if (fakePlayer.mediaStatus !== 5) {
                 //fakePlayer.stop()
                 processorNextFile.start()
@@ -204,8 +189,6 @@ Item {
                     stop()
                     fakePlayer.stop()
                     forcedWait.stop()
-                        bixConf.setValue("filesMetadatesLoaded", countFilesAnalyzed + prevfilesAnalyzed)
-                        bixConf.setValue("extractedMetadata", true)
                         metaDataOfFilesAnd()
                 }
             } else {

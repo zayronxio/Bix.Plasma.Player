@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Media Session API Bridge</title>
+    <style>
+        /* Audio oculto */
+        #media-anchor {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Audio silencioso solo para activar MPRIS -->
+    <audio id="media-anchor" src="silent.mp3"></audio>
+
+    <script>
+
+     function updateMediaMetadata(title, artist, album, artworkUrl) {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: title || 'Título Desconocido',
+                    artist: artist || 'Artista Desconocido',
+                    album: album || 'Álbum Desconocido',
+                     artUrl: [
+                       { src: artworkUrl || "" },
+                    ]
+                });
+                console.log("Metadata actualizada:", title, artist);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const audioEl = document.getElementById('media-anchor');
+
+            // Intentamos iniciar el audio silencioso
+            audioEl.play().catch(err => {
+                console.warn('No se pudo reproducir automáticamente:', err);
+            });
+
+            if ('mediaSession' in navigator) {
+                // Establecemos metadatos visibles en MPRIS/KDE
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: '-',
+                    artist: '',
+                    album: '',
+                    artUrl: [
+                       { src: '' },
+                    ]
+                });
+
+                // Estado inicial
+                navigator.mediaSession.playbackState = 'paused';
+
+                // Sobrescribimos todas las acciones de Media Session
+                const actions = ['play', 'pause', 'stop', 'previoustrack', 'nexttrack', 'seekbackward', 'seekforward', 'seekto'];
+                actions.forEach(action => {
+                    navigator.mediaSession.setActionHandler(action, () => {
+                        // Emitimos un evento personalizado en lugar de controlar audio
+                        const event = new CustomEvent('mediaSessionAction', { detail: { action } });
+                        window.dispatchEvent(event);
+                        console.log('MediaSession action intercepted:', action);
+                    });
+                });
+
+                console.log("Media Session inicializada correctamente.");
+            }
+
+            // Ejemplo: escuchar la nueva señal
+            window.addEventListener('mediaSessionAction', (e) => {
+    const action = e.detail.action;
+    // Usa un prefijo único como "QML_ACTION:"
+    console.log("QML_ACTION:" + action);
+
+    switch(action) {
+        case 'play':
+            console.log('Ejecutar play en el reproductor real');
+            break;
+        case 'pause':
+            console.log('Ejecutar pause en el reproductor real');
+            break;
+        case 'nexttrack':
+            console.log('Siguiente pista');
+            break;
+        case 'previoustrack':
+            console.log('Pista anterior');
+            break;
+        default:
+            console.log('Acción no manejada:', action);
+    }
+});
+        });
+    </script>
+</body>
+</html>
+
