@@ -22,23 +22,23 @@ For support, email zayronxio@gmail.com
 
 ## Working Features:
 
-- MP3 scanner to locate files in the selected folder
-- Play, Next, and Previous buttons
-- Interface and behavior similar to a standalone app
-- MP3 player
-- Metadata reader
-- Album cover image loader
-- Progress bar
-- button favorites
-- Shuffle Play mode button
-- search
-- The plasmoid's bottom section should display the title, artist
-- loading information from the configuration file without scanning again
+- MP3 scanner to locate files in the selected folder.
+- Play, Next, and Previous buttons.
+- Interface and behavior similar to a standalone app.
+- MP3 player.
+- Metadata reader.
+- Album cover image loader.
+- Progress bar.
+- button favorites.
+- Shuffle Play mode button.
+- search.
+- The plasmoid's bottom section should display the title, artist.
+- loading information from the configuration file without scanning again.
+- Button to move the plasmoid and minimize it
 
 ## To-Do:
 - Side panel doesn't display complete information yet
 - Playlist generator
-- Button to move the plasmoid and minimize it
 - interposed window detector
 - fixes in the behavior of the player in terms of the index, since it currently fails when changing from all music to Favorites
 
