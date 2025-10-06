@@ -1,7 +1,7 @@
 # Bix Plasma Player (ALFA)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/zayronxio/Bix.Plasma.Player/main/preview/image10.png" width=250/>
+  <img src="https://raw.githubusercontent.com/zayronxio/Bix.Plasma.Player/main/preview/image10.png" width=320/>
   <h2 align="center">A Modern Multimedia Player for KDE Plasma</h2>
 </p>
 
